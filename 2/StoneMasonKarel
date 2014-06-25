@@ -1,0 +1,40 @@
+
+ //* File: StoneMasonKarel.java
+
+
+import stanford.karel.*;
+
+public class StoneMasonKarel extends SuperKarel {
+
+	public void run()	{
+		up(); //calls function to move it up
+		while (frontIsClear())	{
+			move();
+			move();
+			move();
+			move();
+			up();
+		}
+	}
+	
+	private void up()	{
+		turnLeft(); //makes it face up
+		beeper(); //calls the beeper function to check on the bottom square
+		while (frontIsClear())	{ //while there is no wall, move up and place beepers if they are needed
+			move();
+			beeper();
+		}
+		turnLeft(); //turn around
+		turnLeft();
+		while (frontIsClear()){ //move back down
+			move();
+		}
+		turnLeft();//face forward
+	}
+	
+	private void beeper()	{
+		if (!beepersPresent())	{
+			putBeeper();
+		}
+	}
+	}
