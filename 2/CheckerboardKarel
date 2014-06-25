@@ -1,0 +1,139 @@
+/*
+ * File: CheckerboardKarel.java
+ * ----------------------------
+ This program draws a checkerboard on any rectangle it is given, whether it be a 1*8, a 8*1, or a 40*40. 
+ Made by David Dworken
+ */
+
+import stanford.karel.*;
+
+public class CheckerboardKarel extends SuperKarel {
+/*
+The run function is the main function, the basic logic is: 
+-it checks if the are in front of karel is clear, if it is it loops row1, up1, row1, and up2, as long as the front is clear. 
+-if the front is not clear, then it checks if it is in 1,1. If it is in 1,1 then it tries to turn around and checks if that 
+	makes it clear in front of it. If the front is not clear and no beepers are present then it turns right and loops row1, 
+	up1, row1, up2
+ */
+	public void run()	{ //the main run function
+		putBeeper(); //it starts by placing 3 beepers, these are used for authentication purposes
+		putBeeper(); //to determine whether or not it is in the first corner of the rectangle 
+		putBeeper(); //(hence it being on the first section of the first part of the run function)
+		if(frontIsClear()){ //if the front is clear
+			pickBeeper(); //pick up 2/3 of those beepers we dropped to use as authentication
+			pickBeeper(); //the other is left behind for authentication in row1()
+			while(frontIsClear())	{ //while the front is clear, loop these things
+				row1(); //row 1 goes across the row in an easterly direction
+				up1(); //up 1 goes up on the east side of the rectangle
+				row1(); //row 2 goes across the row in a westerly direction
+				up2(); //up 2 goes up on the west side of the rectangle
+			}
+		}
+		//if (!frontIsClear()) 	{ //if the front is not clear
+		else {
+			if(beepersPresent())	{ //and a beeper is present
+				pickBeeper(); //pick up a beeper, so that we can check
+				if(beepersPresent()){ //if a beeper is still present
+					pickBeeper();//now we once again pick up a beeper so that we can check
+						if(beepersPresent()){ //if a beeper is still present, if it is then
+							turnRight(); //it turns around
+							turnRight();
+							pickBeeper(); //picks up the last authentication beeper
+							if(frontIsClear())	{ //if the front is clear now that we did a 180 degree turn, then
+								move(); //move forward one space
+							}
+							if(!beepersPresent())	{ //if no beepers are present then, 
+								turnLeft(); //turn right
+								turnLeft();
+								turnLeft();
+								row1(); //row 1 goes across the row in an easterly direction
+								up1(); //up 1 goes up on the east side of the rectangle
+								row1(); //row 2 goes across the row in a westerly direction
+								up2(); //up 2 goes up on the west side of the rectangle
+							}
+						}
+				}
+				putBeeper(); //to replace the beeper if this was incorrectly fired at the end of this sequence
+}
+}
+	}
+	
+/*
+The row1 function goes across the row in an east/west direction, the basic logic is: 
+-if a beepers present then that means it should make a space between that beeper and the next beeper
+-if a beeper is not present then that means it should move forward, and place a beeper, then move once again (continue the
+	checkerboard pattern
+ */
+	private void row1()	{ //row 1 goes across the row in an east/west direction
+		if(beepersPresent())	{ //if a beeper is present, then 
+			//Note: if a beeper is present then that means it should move, move, put beeper
+			while (frontIsClear())	{ //continually do the below things while your front is clear
+				move(); //move
+				if (frontIsClear())	{ //then check that the front is still clear
+					move(); //then move once again
+					putBeeper(); // then place a beeper for the checkerboard patter
+				}
+			}
+		}
+		if(!beepersPresent()){ //if a beeper is not present then
+			//Note: if a beeper is not present that that means it should move, put beeper, move (thus making the checkerboard pattern alternate)
+			while (frontIsClear())	{ //continually do the below as long as the front is clear
+				move(); //move
+				if (frontIsClear())	{ //check that the front is still clear
+					putBeeper(); //if it is, then put a beeper then
+					move(); //move
+				}
+			}
+		}
+	}
+/*
+The up1 function goes up on the east side of the rectangle, the basic logic is: 
+-if there is a beeper at the end of the row then do not place a beeper above it
+-if there is not a beeper at the end of the row then place a beeper above that location
+Note: the placement of these beepers is used in row1() in order to ascertain whether it 
+	should move, move, putbeeper or move, putbeeper, move
+ */
+	private void up1()	{ //up 1 goes up on the east side of the rectangle
+		turnLeft(); //turns left so it is facing north
+		if(!beepersPresent())	{ //if there are beepers there, 
+			if(frontIsClear()){ //and the front is clear (area to the north of it)
+				move(); //then move up one spot
+				turnLeft(); //turn to face west
+				putBeeper(); //place a beeper
+				turnLeft(); //turn South
+				move(); //move back down to the original position
+				turnLeft(); //turns east
+				turnLeft(); //turns north
+			}
+		}
+		if(frontIsClear())	{ //if the north side is clear, then 
+			move(); //move up, and then 
+			turnLeft(); //turn left to face west 
+		}
+	}
+/*
+The up2 function goes up on the west side of the rectangle, the basic logic is: 
+-if there is a beeper at the end of the row then do not place a beeper above it
+-if there is not a beeper at the end of the row then place a beeper above that location
+Note: the placement of these beepers is used in row1() in order to ascertain whether it 
+	should move, move, putbeeper or move, putbeeper, move
+ */
+	private void up2()	{ //up 2 goes up on the west side of the rectangle
+		turnRight(); //turn to face north
+		if(!beepersPresent())	{ //if there is no beeper in that spot, then
+			if(frontIsClear()){ //check if it is clear to the north
+				move(); //if it is then, move one place to the north
+				turnRight(); //turn east
+				putBeeper(); //put down a beeper
+				turnRight();// turn south
+				move(); //walk down one space south
+				turnRight(); //turn west
+				turnRight(); //turn north
+			}
+		}
+		if(frontIsClear())	{ //if the spot to the north is clear, then
+			move(); //move one spot north
+			turnRight(); //and then turn east
+		}
+	}
+}
