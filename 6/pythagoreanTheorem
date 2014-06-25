@@ -1,0 +1,45 @@
+/*
+ * File: PythagoreanTheorem.java
+ * Name: 
+ * Section Leader: 
+ * -----------------------------
+ * This file is the starter file for the PythagoreanTheorem problem.
+ */
+
+import acm.program.*;
+import java.lang.*;
+import java.util.Random;
+
+public class PythagoreanTheorem extends ConsoleProgram {
+	public void run() {
+		println("Enter values to computer Pythagorean theorem.");
+		double a = readDouble("a: ");
+		double b = readDouble("b: ");
+		if(a <= 0|| b <= 0){
+			String insult = insult();
+			println(insult);
+		}
+		else{
+			println("c = " + Math.sqrt(a*a + b*b));
+		}
+	}
+	
+	public String insult(){
+		Random generator = new Random();
+		int firstInsult = generator.nextInt(4) + 1;
+		int firstAnimal = generator.nextInt(2) + 1;
+		String you  = "you";
+		String[] insult = new String[6];
+		insult[1] = " dumb";
+		insult[2] = " idiotic";
+		insult[3] = "  unrefined";
+		insult[4] = " moronic";
+		insult[5] = " stupid";
+		String[] animal = new String[4];
+		animal[1] = " monkey";
+		animal[2] = " donkey";
+		animal[3] = " female dog";
+		return (you + insult[firstInsult] + animal[firstAnimal]) ;
+		
+	}
+}
