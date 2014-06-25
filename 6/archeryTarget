@@ -1,0 +1,43 @@
+/*
+ * File: Target.java
+ * Name: 
+ * Section Leader: 
+ * -----------------
+ * This file is the starter file for the Target problem.
+ */
+
+import acm.graphics.*;
+import acm.program.*;
+import java.awt.*;
+
+public class Target extends GraphicsProgram {	
+	public void run() {
+		while(true)	{
+			int centerX = getWidth() / 2;
+			int centerY = getHeight() /2;
+			int outerCircleRadius = 72;
+			double whiteCircleRadius = 46.8;
+			double innerCircleRadius = 21.6;
+			GOval outsideCircle = new GOval (centerX - outerCircleRadius / 2, centerY - outerCircleRadius / 2, outerCircleRadius, outerCircleRadius);
+			outsideCircle.setFilled(true);
+			outsideCircle.setFillColor(Color.red);
+			outsideCircle.setColor(Color.red);
+			add(outsideCircle);
+			GOval middleCircle = new GOval (centerX - whiteCircleRadius / 2, centerY - whiteCircleRadius / 2, whiteCircleRadius, whiteCircleRadius);
+			middleCircle.setFilled(true);
+			middleCircle.setFillColor(Color.white);
+			middleCircle.setColor(Color.white);
+			middleCircle.sendToFront();
+			add(middleCircle);
+			GOval innerCircle = new GOval (centerX - innerCircleRadius / 2, centerY - innerCircleRadius / 2, innerCircleRadius, innerCircleRadius);
+			innerCircle.setFilled(true);
+			innerCircle.setFillColor(Color.red);
+			innerCircle.setColor(Color.red);
+			innerCircle.sendToFront();
+			add(innerCircle);
+			pause(30);
+			removeAll();
+		}
+		
+	}
+}
