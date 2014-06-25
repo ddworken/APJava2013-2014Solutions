@@ -1,0 +1,167 @@
+import java.sql.*;
+import java.util.regex.*;
+import java.io.*;
+import java.util.*;
+
+public class automaticGuesser {
+	
+	public List<String> lines = new ArrayList<String>();
+	private List<Character> charsGuessed = new ArrayList<Character>();
+	/*private Connection connect = null;
+	private Statement statement = null;
+	private PreparedStatement preparedStatement = null;
+	private ResultSet resultSet = null;*/
+	boolean firstTime = true;
+	String word;
+	
+	/**
+	 * The public method that it called from Hangman.java that acts as the main method to organize the process of making a guess. 
+	 */
+	public String automatedMakeAGuess(String wordState) throws Exception{
+		/*if(firstTime == true){
+			createArrayList();
+		}*/
+		String guess;
+		//word = wordLower;
+		updateArrayList(wordState);
+		guess = findMostCommonChar(frequencyOfChars());
+		System.out.print("The guess is: ");
+		System.out.println(guess);
+		charsGuessed.add(guess.charAt(0));
+		return guess;
+	}
+	/**
+	 * Creates an arrayList called lines of all of the possible words. 
+	 */
+	public void createArrayList(){
+		try{
+			File file = new File("HangmanLexicon.txt");
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String currentLine = reader.readLine();
+			while(currentLine != null){
+				lines.add(toLowerCase(currentLine));
+				currentLine = reader.readLine();
+			}
+		}
+		catch(Exception e){
+			System.out.println("Exception: File Not Found!");
+		}
+	}
+	/**
+	 * returns a int array that contains the frequency of all of the different characters
+	 */
+	private int[] frequencyOfChars(){
+		int[] frequencyOfChars = new int[27];
+		for(char charToCount='a'; charToCount <= 'z'; charToCount++){
+			int occurrences = 0;
+			for(int i=0; i < lines.size(); i++){ //GOES THROUGH THE WHOLE ARRAY
+				String currentLine = lines.get(i);
+				int output = countOccurencesOfCharInString(currentLine, charToCount);
+				occurrences = output + occurrences;
+			}
+			if(charsGuessed.contains(charToCount)){
+				//String print = "Ok, I skipped: " + charToCount + " and changed " + occurrences + " to 0";
+				//System.out.println(print);
+				//System.out.print("Ok, I skipped: ");
+				//System.out.println(charToCount);
+				occurrences = 0;
+			}
+			frequencyOfChars[charToNumberInAlphabet(charToCount)] = occurrences;
+			//String print = ("There are " + frequencyOfChars[charToNumberInAlphabet(charToCount)] + " occurrences of " + charToCount + " in the arrayList");
+			//System.out.println(print);
+		}
+		return frequencyOfChars;
+	}
+	/**
+	 * counts the number of occurrences of a specific char in any string that is passed to it
+	 * returns a integer for how many times that char occurs. 
+	 */
+	private int countOccurencesOfCharInString(String currentLine, char charToCount){
+		int occurences = 0;
+		for(int i = 0; i < currentLine.length(); i++){
+			if(currentLine.toLowerCase().charAt(i) == charToCount){
+				occurences++;
+			}
+		}
+		if(occurences > 1){
+			occurences = 1;
+		}
+		return occurences;
+	}
+	
+	private int charToNumberInAlphabet(char charToFindNumberFor){
+		return (((int)charToFindNumberFor) - 96);
+	}
+	
+	private char numberInAlphabetToChar(int numberInAlphabet){
+		return (char)(numberInAlphabet + 96);
+	}
+	
+	private String findMostCommonChar(int[] frequencyOfChars){
+		int largestNumber = 0;
+		int largestNumberIsAtIndexOf = 0;
+		for(int i = 0; i < frequencyOfChars.length; i++){
+			if(frequencyOfChars[i] > largestNumber){
+				largestNumberIsAtIndexOf = i;
+				largestNumber = frequencyOfChars[i];
+			}
+		}
+		return "" + numberInAlphabetToChar(largestNumberIsAtIndexOf);
+	}
+	
+	private void updateArrayList(String wordState){
+		//System.out.println("Word List Updating, Please Wait.");
+		String regex = wordState.replaceAll("-", ".");
+		System.out.print("The regex being used is: ");
+		System.out.println(regex);
+		Pattern regexP = Pattern.compile(regex);
+		for(int i=lines.size() - 1; i >= 0; i--){
+			//System.out.println(i);
+			String currentLine = lines.get(i);
+			//System.out.println("in for!!!!!");
+			Matcher matcher = regexP.matcher(currentLine);
+			//System.out.println("in for!!!!!");
+			if(matcher.matches() == false){
+				lines.remove(i);
+				//if(currentLine.equals(word)){
+					//System.out.print("Ok, I removed: ");
+					//System.out.println(currentLine);
+				//}
+			}
+			else{
+				//System.out.print("Ok, I left: ");
+				//System.out.println(currentLine);
+			}
+		}
+	}
+	
+	public void dumpArrayListToConsole(){
+		System.out.println(lines.size());
+		System.out.println("Start Dump: ------------------------------------------------");
+		for(int i=0; i < lines.size(); i++){
+			String currentLine = lines.get(i);
+			//System.out.print("At index ");
+			//System.out.print(i);
+			//System.out.print(" the string is ");
+			System.out.println(currentLine);
+		}
+		System.out.println("End Dump: --------------------------------------------------");
+		System.out.println(lines.size());
+	}
+	
+	
+	private String toLowerCase(String mixedCaseString){
+		String newString = "";
+		int stringLength =mixedCaseString.length();
+		for(int i = 0; i < stringLength; i++){
+			char convertedToLower = mixedCaseString.charAt(i);
+			if((int)convertedToLower >= 65 && (int)convertedToLower <= 90){
+				//System.out.println("Uppercase Found");
+				convertedToLower = (char)((int)convertedToLower + 26 + 6);
+			}
+			//System.out.println((int)convertedToLower);
+			newString = newString + convertedToLower;
+		}
+		return newString;
+	}
+}
