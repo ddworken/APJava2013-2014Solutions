@@ -1,0 +1,40 @@
+/*
+ * File: Pyramid.java
+ * Name: 
+ * Section Leader: 
+ * ------------------
+ * This file is the starter file for the Pyramid problem.
+ * It includes definitions of the constants that match the
+ * sample run in the assignment, but you should make sure
+ * that changing these values causes the generated display
+ * to change accordingly.
+ */
+
+import acm.graphics.*;
+import acm.program.*;
+//import java.awt.*;
+
+public class Pyramid extends GraphicsProgram {
+
+/** Width of each brick in pixels */
+	private static final int brickWidth = 30;
+
+/** Height of each brick in pixels */
+	private static final int brickHeight = 12;
+	
+	int height = getHeight();
+	
+	public void run() {
+		pyramidBuilder(0, 20);
+	}
+	
+	private void pyramidBuilder(int startPoint, int numberOfBricks){
+		for(int i = 0; i < numberOfBricks; i++)	{ //goes up
+			for(int j = 0; j < numberOfBricks - i; j++)	{ //goes across
+				GRect brick = new GRect(startPoint + (j * brickWidth) + ((brickWidth/2) * i), getHeight() - (i * brickHeight) - brickHeight, brickWidth, brickHeight);
+				add(brick);
+			}
+		}
+	}
+}
+
