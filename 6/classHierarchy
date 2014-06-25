@@ -1,0 +1,97 @@
+/*
+ * File: ProgramHierarchy.java
+ * Name: 
+ * Section Leader: 
+ * ---------------------------
+ * This file is the starter file for the ProgramHierarchy problem.
+ */
+
+import acm.graphics.*;
+import acm.program.*;
+import java.awt.*;
+
+public class ProgramHierarchy extends GraphicsProgram {	
+	public void run() {
+		while(true)	{
+			int boxWidth = 150;
+			int boxHeight = 50;
+			int height = getHeight();
+			int width = getWidth();
+			int spaceBetweenBoxesX = (width - (boxWidth * 3) ) / 4;
+			int spaceBetweenBoxesY = (height - (boxHeight * 2) ) / 3;
+			
+			//Program Box Area
+			int programBoxX = width / 2 - boxWidth / 2;
+			int programBoxY = spaceBetweenBoxesY;
+			GRect programBox = new GRect(programBoxX, programBoxY, boxWidth, boxHeight);
+			add(programBox);
+			GLabel programLabel = new GLabel ("Program", 0, 0);
+			int programLabelX = boxWidth/2 - (int)programLabel.getWidth()/2 + programBoxX;
+			int programLabelY = boxHeight/2 + (int)programLabel.getHeight() / 2 + programBoxY;
+			programLabel.setLocation(programLabelX, programLabelY);
+			add(programLabel);
+			
+			//Graphics Program Box Area
+			int graphicsProgramBoxX = spaceBetweenBoxesX;
+			int graphicsProgramBoxY = programBoxY + spaceBetweenBoxesY;
+			GRect graphicsProgramBox = new GRect(graphicsProgramBoxX, graphicsProgramBoxY, boxWidth, boxHeight);
+			add(graphicsProgramBox);
+			GLabel graphicsProgramLabel = new GLabel ("GraphicsProgram", 0, 0);
+			int graphicsProgramLabelX = boxWidth/2 - (int)graphicsProgramLabel.getWidth()/2 + graphicsProgramBoxX;
+			int graphicsProgramLabelY = boxHeight/2 + (int)graphicsProgramLabel.getHeight() / 2 + graphicsProgramBoxY;
+			graphicsProgramLabel.setLocation(graphicsProgramLabelX, graphicsProgramLabelY);
+			add(graphicsProgramLabel);
+			
+			//Console Program Box Area
+			int consoleProgramBoxX = spaceBetweenBoxesX + spaceBetweenBoxesX + boxWidth;
+			int consoleProgramBoxY = programBoxY + spaceBetweenBoxesY;
+			GRect consoleProgramBox = new GRect(consoleProgramBoxX, consoleProgramBoxY, boxWidth, boxHeight);
+			add(consoleProgramBox);
+			GLabel consoleProgramLabel = new GLabel ("ConsoleProgram", 0, 0);
+			int consoleProgramLabelX = boxWidth/2 - (int)consoleProgramLabel.getWidth()/2 + consoleProgramBoxX;
+			int consoleProgramLabelY = boxHeight/2 + (int)consoleProgramLabel.getHeight() / 2 + consoleProgramBoxY;
+			consoleProgramLabel.setLocation(consoleProgramLabelX, consoleProgramLabelY);
+			add(consoleProgramLabel);
+			
+			//Dialog Program Box Area
+			int dialogProgramBoxX = spaceBetweenBoxesX + spaceBetweenBoxesX + spaceBetweenBoxesX + boxWidth + boxWidth;
+			int dialogProgramBoxY = programBoxY + spaceBetweenBoxesY;
+			GRect dialogProgramBox = new GRect(dialogProgramBoxX, dialogProgramBoxY, boxWidth, boxHeight);
+			add(dialogProgramBox);
+			GLabel dialogProgramLabel = new GLabel ("DialogProgram", 0, 0);
+			int dialogProgramLabelX = boxWidth/2 - (int)dialogProgramLabel.getWidth()/2 + dialogProgramBoxX;
+			int dialogProgramLabelY = boxHeight/2 + (int)dialogProgramLabel.getHeight() / 2 + dialogProgramBoxY;
+			dialogProgramLabel.setLocation(dialogProgramLabelX, dialogProgramLabelY);
+			add(dialogProgramLabel);
+			
+			//Line to Graphics Area
+			int graphicsLineX1 = programBoxX + boxWidth / 2;
+			int graphicsLineY1 = programBoxY + boxHeight;
+			int graphicsLineX2 = graphicsProgramBoxX + boxWidth/2;
+			int graphicsLineY2 = graphicsProgramBoxY;
+			GLine graphicsLine = new GLine(graphicsLineX1, graphicsLineY1, graphicsLineX2,graphicsLineY2);
+			add(graphicsLine);
+			
+			//Line to console Area
+			int consoleLineX1 = programBoxX + boxWidth / 2;
+			int consoleLineY1 = programBoxY + boxHeight;
+			int consoleLineX2 = consoleProgramBoxX + boxWidth/2;
+			int consoleLineY2 = consoleProgramBoxY;
+			GLine consoleLine = new GLine(consoleLineX1, consoleLineY1, consoleLineX2,consoleLineY2);
+			add(consoleLine);
+			
+			//Line to dialog Area
+			int dialogLineX1 = programBoxX + boxWidth / 2;
+			int dialogLineY1 = programBoxY + boxHeight;
+			int dialogLineX2 = dialogProgramBoxX + boxWidth/2;
+			int dialogLineY2 = dialogProgramBoxY;
+			GLine dialogLine = new GLine(dialogLineX1, dialogLineY1, dialogLineX2,dialogLineY2);
+			add(dialogLine);
+			
+			pause(30);
+			removeAll();
+		
+		}
+	}
+}
+
