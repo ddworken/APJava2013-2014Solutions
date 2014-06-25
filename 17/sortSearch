@@ -1,0 +1,50 @@
+/*
+ * File: SortSearch.java
+ * --------------------
+ * This program is a stub for the Assignment 17.
+ * This works on manipulating lists of names.
+ */
+
+import acm.program.*;
+import acm.util.ErrorException;
+import java.io.*;
+import java.util.*;
+
+public class SortSearch extends ConsoleProgram {
+
+	private void clearNames(){
+		
+	}
+	
+	private void importNames(){
+		
+	}
+
+
+	private void bubbleSort(){
+		//write and call any additional methods you need.
+	}
+	
+	private void insertionSort(){
+		//write and call any additional methods you need.
+	}
+	
+	private void binarySearch(String testName){
+		
+	}
+	
+	public void run() {
+		importNames();
+		bubbleSort();
+		clearNames();
+		importNames();
+		insertionSort();
+		String testName="test";//needs an initial value to get into the while loop
+		while (!testName.equals("")){
+			testName=readLine("Please input a name to search for:");
+			binarySearch(testName);
+		}
+	}	
+
+	// instance variables out here!
+}
