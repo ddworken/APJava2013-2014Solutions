@@ -1,0 +1,47 @@
+import java.lang.reflect.Array;
+
+import info.gridworld.actor.Bug;
+
+ 
+
+/** 
+
+ * A BoxBug traces out a square “box” of a given size. 
+
+ * The implementation of this class is testable on the AP CS A and AB Exams. 
+
+ */ 
+
+public class DancingBug extends Bug {
+	private int howManyDanceTurnsSoFar = 1;
+	int arraySize = 0;
+	private int[] turn;
+	public DancingBug(int[] turns) { 
+		arraySize = Array.getLength(turns);
+		turn = turns;
+	} 
+	public void act() { 
+		/*if(howManyDanceTurnsSoFar == arraySize ){
+			howManyDanceTurnsSoFar = 0;
+		}*/
+		 if (canMove()) { 
+			 move(); 
+		 } 
+		 else { 
+			 //turn();
+			 dancingBugTurn();
+		 } 
+	}
+	
+	private void dancingBugTurn(){
+		System.out.println("Test");
+		turn();
+		turn();
+		System.out.println(howManyDanceTurnsSoFar);
+		for(int i = 0; i < turn[howManyDanceTurnsSoFar]; i++){
+			turn();
+			//System.out.println(howManyDanceTurnsSoFar);
+			System.out.println("dgsadfafdsafdas");
+		}
+	}
+}
