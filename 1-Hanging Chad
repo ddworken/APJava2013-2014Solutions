@@ -1,0 +1,58 @@
+
+//David Dworken's completed Karel program that solves the problem of hanging chads
+
+
+import stanford.karel.*;
+
+public class HangingChadKarel extends SuperKarel {
+
+	public void run() {
+		while (frontIsClear())	{
+			move();
+			cleanRectangle();
+		}
+	}
+	
+	private void cleanRectangle() {
+		if (beepersPresent())	{
+			while (beepersPresent())	{
+				pickBeeper();
+			}
+			putBeeper();
+			turnLeft(); //now facing north
+			move(); //now at top section of rectangle
+			while (beepersPresent())	{ //if there is not a beeper there, place one
+				pickBeeper();
+			}
+			putBeeper();
+			turnAround(); //now facing south
+			move();
+			move(); //now facing south and at the bottom square
+			while (beepersPresent())	{ //if there is not a beeper in the bottom spot, place one
+				pickBeeper();
+			}
+			putBeeper();
+			turnAround(); //now facing north
+			move(); //now in middle spot
+			turnRight(); //now facing right
+			move();
+		}
+		else { //if there is not a beeper in the middle spot, then make sure the top and bottom are also clean
+			turnLeft(); //now facing north
+			move(); //now at top section of rectangle
+			while (beepersPresent())	{ //if there is a beeper in the top spot, pick it up
+				pickBeeper();
+			}
+			turnAround(); //now facing south
+			move();
+			move(); //now facing south and at the bottom square
+			while (beepersPresent())	{ //if there is a beeper in the bottom spot, pick it up
+				pickBeeper();
+			}
+			turnAround(); //now facing north
+			move(); //now in middle spot
+			turnRight(); //now facing right
+			move();
+		}
+	}
+	}
