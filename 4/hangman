@@ -1,0 +1,237 @@
+/*
+ * File: Hangman.java
+ * ------------------
+ * This program will eventually play the Hangman game from
+ * Assignment #4.
+ */
+
+import acm.graphics.*;
+import acm.program.*;
+import acm.util.*;
+
+import java.awt.*;
+import java.util.Random;
+import java.io.*;
+import java.util.ArrayList;
+/*
+ * Algorithm Idea
+ * It uses the current algorithm to go through 
+ * and simulate guessing the 5 most common 
+ * letters. From there it then calculates 
+ * probablility of each reducing the list by x
+ *  size and uses that to make a better guess. 
+ */
+public class Hangman extends ConsoleProgram {
+	Random generator = new Random();
+	String word = "";
+	int correctLetters = 0;
+	public int wordVersion = 0;
+	public String[] wordState = new String[100];
+	int guessesLeft = 10;
+	int whichWord;
+	private HangmanCanvas canvas;
+	private automaticGuesser automate;
+	boolean automateEverything = true;
+	
+	
+	int failures = 0;
+	int guesses = 0;
+	
+	public void init() {
+		canvas = new HangmanCanvas();
+		add(canvas); 
+		automate = new automaticGuesser();
+		automate.createArrayList();
+	} 
+	
+    public void run() {
+    	runReal();
+	}
+    
+    public void runReal(){
+    	canvas.reset();
+		whichWord = generator.nextInt(121806);
+		//word = toLowerCase(getWord(whichWord));
+		word = toLowerCase(getWordFromList(whichWord));
+		while(true){
+			if(word.length() == 4 || word.length() == 5 || word.length() == 3){
+				System.out.println("sdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf");
+				break;
+			}
+			String print = "No break because it was " + word.length() + " characters long.";
+			//System.out.println(print);
+			whichWord = generator.nextInt(121806);
+			word = toLowerCase(getWordFromList(whichWord));
+			//System.out.println("Looking for 4 length");
+		}
+		System.out.println(word);
+		System.out.println("<edit>");
+		setUp();
+		game();
+		//waitForUser();
+		//canvas.reset();
+		//System.gc();
+    }
+    
+    private void setUp(){
+    	println("Welcome to Hangman!");
+    }
+    
+    private void game(){
+    	//System.out.println("1");
+    	wordState[0] = "";
+    	//System.out.println("2");
+    	for(int i = 0; i < word.length(); i++){
+    		wordState[0] = wordState[0] + "-";
+    	}
+    	while(correctLetters < word.length() && guessesLeft != 0){
+    		println("The word now looks like this: " + wordState());
+    		makeAGuess();
+    	}
+    	if(guessesLeft == 0){
+    		println("Loser!");
+    	}
+    	if(correctLetters == word.length()){
+    		println("You guessed the word: " + word);
+    		println("You win!");
+    	}
+    }
+    
+    private String wordState(){
+    	canvas.displayWord(wordState[wordVersion]);
+    	return wordState[wordVersion];
+    }
+    
+    private void makeAGuess(){
+    	println("You have " + guessesLeft + " guesses left. ");
+    	String guess = "?";// readLine("Your Guess: ");
+    	String lowerGuess1 = toLowerCase(guess);
+    	String initCharGuess = "-";
+    	char charGuess = initCharGuess.charAt(0);
+    	String lowerGuess;
+    	if(lowerGuess1.charAt(0) == '|'){
+    		automate.dumpArrayListToConsole();
+    	}
+    	if(lowerGuess1.charAt(0) == '?'){
+    		try{
+    			lowerGuess = automate.automatedMakeAGuess(wordState[wordVersion]);
+    		}
+    		catch(Exception e){
+    			lowerGuess = "failure";
+    		}
+    	}
+    	else{
+    		lowerGuess = lowerGuess1;
+    	}
+    	if(lowerGuess.length() != 1){
+    		println("Error that is a string, not a char. Please enter a char. ");
+    		makeAGuess();
+    		guessesLeft++;
+    	}
+    	else{ //65 --> 122
+    		charGuess = lowerGuess.charAt(0);
+    		//println(charGuess);
+    		if(charGuess >= 65 && charGuess <= 122){
+    			//println("Yay a good char!");
+    		}
+    		else{
+    			println("Error that is not a letter. Please enter a letter. ");
+    			makeAGuess();
+    			guessesLeft++;
+    		}
+    	}
+    	//println(doesItOccur(charGuess));
+    	if(doesItOccur(charGuess) == 0){
+    		guessesLeft--;
+    		println("There are no " + charGuess + "'s in the word. ");
+    		canvas.noteIncorrectGuess(charGuess, guessesLeft);
+    	}
+    	else{
+    		generateNewWordState(charGuess);
+    		correctLetters = correctLetters + doesItOccur(charGuess);
+    		println("You guessed " + charGuess + " and that is correct.");
+    		//println(correctLetters);
+    	}
+    }
+    
+    private void generateNewWordState(char Guess){
+    	wordVersion++;
+    	wordState[wordVersion] = "";
+    	boolean[] indicesOfChar = new boolean[100];
+    	for(int i = 0; i < word.length(); i++){
+			if(word.charAt(i) == Guess){
+				indicesOfChar[i] = true;
+			}
+			else{
+				indicesOfChar[i] = false;
+			}
+		}
+    	for(int j = 0; j < word.length(); j++){
+    		if(indicesOfChar[j] == false){
+    			String previousWordState = wordState[wordVersion - 1];
+    			char charFromBefore = previousWordState.charAt(j);
+    			wordState[wordVersion] = wordState[wordVersion] + charFromBefore;
+    		}
+    		else{
+    			wordState[wordVersion] = wordState[wordVersion] + Guess;
+    		}
+    	}
+    	canvas.displayWord(wordState[wordVersion]);
+    }
+    
+    private int doesItOccur(char charToBeCounted){
+		String newString = "";
+		int stringLength = word.length();
+		int numberOfOccurences = 0;
+		for(int i = 0; i < stringLength; i++){
+			if(word.charAt(i) == charToBeCounted){
+				numberOfOccurences++;
+			}
+		}
+		return numberOfOccurences;
+		//return newString;
+	}
+    
+    private String toLowerCase(String mixedCaseString){
+		String newString = "";
+		int stringLength =mixedCaseString.length();
+		for(int i = 0; i < stringLength; i++){
+			char convertedToLower = mixedCaseString.charAt(i);
+			if((int)convertedToLower >= 65 && (int)convertedToLower <= 90){
+				//System.out.println("Uppercase Found");
+				convertedToLower = (char)((int)convertedToLower + 26 + 6);
+			}
+			//System.out.println((int)convertedToLower);
+			newString = newString + convertedToLower;
+		}
+		return newString;
+	}
+    
+    private String getWordFromList(int index){
+    	try{
+    		String line;
+	    	FileReader filereader = new FileReader("HangmanLexicon.txt");
+	        BufferedReader readline = new BufferedReader(filereader);
+	        for(int i = 0; i < index; i++){
+	        	readline.readLine();
+	        }
+	        line = readline.readLine();
+	    	return line;
+    	}
+    	catch(IOException e) {
+    	      //should never happen
+    	}
+    	return null;
+    	      //should never happen
+	}
+    	
+    private void waitForUser(){
+    	String wasteOfMemory = readLine("Type in Something!");
+    }
+    
+    
+	int[] numberOfOccurences = new int[200];
+	String wordOnLine;
+	String word2;
+	ArrayList<String> wordList = new ArrayList<String>();
+}
