@@ -1,0 +1,37 @@
+/*
+ * File: Hailstone.java
+ * Name: 
+ * Section Leader: 
+ * --------------------
+ * This file is the starter file for the Hailstone problem.
+ */
+
+import acm.program.*;
+
+public class Hailstone extends ConsoleProgram {
+	public void run() {
+		int input = readInt("Enter a number: ");
+		int steps = 0;
+		while(true)	{
+			if(input <= 0){
+				println("What do you want from me? ");
+				break;
+			}
+			if(input%2 == 0)	{
+				input = input / 2;
+				println(input * 2 + " is even, so I take half: " + input);
+				steps++;
+			}
+			if(input%2 != 0 && input != 1){
+				print(input + " is odd, so make 3n + 1: ");
+				input = (input * 3) + 1;
+				println(input);
+				steps++;
+			}
+			if(input == 1){
+				println("The process took " + steps + " steps to reach 1");
+				break;
+			}
+		}
+	}
+}
