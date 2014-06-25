@@ -1,0 +1,471 @@
+/*
+ * File: Breakout.java
+ * -------------------
+ * Name:
+ * Section Leader:
+ * 
+ * This file will eventually implement the game of Breakout.
+ */
+
+import acm.graphics.*;
+import acm.program.*;
+import acm.util.*;
+
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.*;
+import acm.*;
+
+public class Breakout extends GraphicsProgram {
+
+/** Width and height of application window in pixels */
+	public static final int APPLICATION_WIDTH = 400;
+	public static final int APPLICATION_HEIGHT = 600;
+
+/** Dimensions of game board (usually the same) */
+	private static final int WIDTH = APPLICATION_WIDTH;
+	private static final int HEIGHT = APPLICATION_HEIGHT;
+
+/** Dimensions of the paddle */
+	private static final int paddle_WIDTH = 100; //normal is 60
+	private static final int paddle_HEIGHT = 10;
+
+/** Offset of the paddle up from the bottom */
+	private static final int paddle_Y_OFFSET = 50;
+
+/** Number of bricks per row */
+	private static final int NBRICKS_PER_ROW = 10;
+
+/** Number of rows of bricks */
+	private static final int NBRICK_ROWS = 10;
+
+/** Separation between bricks */
+	private static final int BRICK_SEP = 4;
+
+/** Width of a brick */
+	private static final int BRICK_WIDTH =(WIDTH - (NBRICKS_PER_ROW - 1) * BRICK_SEP) / NBRICKS_PER_ROW;
+
+/** Height of a brick */
+	private static final int BRICK_HEIGHT = 8;
+
+/** Radius of the ball in pixels */
+	private static final int BALL_RADIUS = 10;
+	private static final int diameter = BALL_RADIUS * 2;
+
+/** Offset of the top brick row from the top */
+	private static final int BRICK_Y_OFFSET = 70;
+
+/** Number of turns */
+	private static final int NTURNS = 3;
+	
+/** Diameter of bullet */
+	private static final int bulletDiameter = 5;
+
+	
+	private int paddleXCord = WIDTH /2 - paddle_WIDTH /2;
+	private int paddleYCord = HEIGHT - (paddle_Y_OFFSET + paddle_HEIGHT);
+	private int newPaddleWidth = paddle_WIDTH / 3;
+	GRect paddle1 = new GRect(paddleXCord /3 , paddleYCord, newPaddleWidth, paddle_HEIGHT );
+	GRect paddle2 = new GRect(paddleXCord / 3 + newPaddleWidth, paddleYCord, newPaddleWidth, paddle_HEIGHT);
+	GRect paddle3 = new GRect(paddleXCord /3 + newPaddleWidth * 3, paddleYCord, newPaddleWidth, paddle_HEIGHT);
+	private double directionX;
+	private double directionY;
+	private RandomGenerator rgen = RandomGenerator.getInstance();
+	int startX = WIDTH/2 - BALL_RADIUS;
+	int startY = HEIGHT/2 - BALL_RADIUS;
+	GOval ball = new GOval(startX, startY, diameter, diameter);
+	//public GOval bullet = new GOval(100, 100, bulletDiameter, bulletDiameter);
+	int speed = 15;
+	boolean lostYet = false;
+	GObject collision;
+	private GRect[] bricks = new GRect[(NBRICK_ROWS*10) + NBRICKS_PER_ROW + 1];
+	int amountRemoved = 0;
+	long time;
+	AudioClip bounceClip = MediaTools.loadAudioClip("bounce.au");
+	boolean noMoreCollision = false;
+	boolean hasGun = true;
+	int bulletDirectionX = 0;
+	int bulletDirectionY = -6;
+	boolean start;
+	GLabel liveSpeed;
+	boolean fireBullet = true;
+	private GOval bullet;
+	int repeatCollision = 200;
+	
+	
+	
+/* Method: run() */
+/** Runs the Breakout program. */
+	public void run() {
+		setup();
+		difficulty();
+		startTimer();
+		add(ball);
+		while(amountRemoved < (NBRICKS_PER_ROW * NBRICK_ROWS) + 20 && lostYet == false){
+			ballMove();
+			//System.out.println(arrayBrickDestroyedChecker());
+		}
+		done();
+	}
+	
+/* Method: setup() */
+/** Starts mouse and key listeners and then creates the bricks and the paddle*/
+	private void setup(){
+		addMouseListeners();
+		addKeyListeners();
+		brickSetup();
+		paddleMaker();
+		ballMaker();
+		waitForUser();
+	}
+/* Method: brickSetup() */
+/** Creates all of the bricks at the top of the screen*/
+	private void brickSetup(){
+		for(int i = 0; i <= NBRICK_ROWS; i++)	{ //goes down
+			for(int j = 0; j <= NBRICKS_PER_ROW; j++)	{ //goes across
+				int yCordTopBrick = (i * BRICK_HEIGHT) + BRICK_Y_OFFSET;
+				int xCordTopBrick = (j * BRICK_WIDTH) + BRICK_SEP;
+				bricks[(i*10)+j] = new GRect(xCordTopBrick, yCordTopBrick, BRICK_WIDTH, BRICK_HEIGHT);
+				bricks[(i*10)+j].setFilled(true); 
+				if( i == 1 || i == 2){
+					bricks[(i*10)+j].setFillColor(Color.red);
+				}
+				if( i == 3 || i ==4){
+					bricks[(i*10)+j].setFillColor(Color.orange);
+				}
+				if( i == 5 || i ==6){
+					bricks[(i*10)+j].setFillColor(Color.yellow);
+				}
+				if( i == 7 || i ==8){
+					bricks[(i*10)+j].setFillColor(Color.green);
+				}
+				if(i ==9 || i ==10){
+					bricks[(i*10)+j].setFillColor(Color.cyan);
+				}
+				bricks[(i*10)+j].setColor(Color.white);
+				add(bricks[(i*10)+j]);
+			}
+		}
+	}
+	
+/* Method: paddleMaker() */
+/** Creates the paddle*/
+	private void paddleMaker(){	
+		paddle1.setFilled(true);
+		add(paddle1);
+		paddle2.setFilled(true);
+		add(paddle2);
+		paddle3.setFilled(true);
+		add(paddle3);
+	}
+
+/* Method: mouseMoved() */
+/** When the mouse moves, move the paddle along with it in the X axis*/	
+	public void mouseMoved(MouseEvent e){
+		paddleXCord = e.getX();
+		if(paddleXCord  +  paddle_WIDTH > WIDTH){
+			paddleXCord = WIDTH - paddle_WIDTH;
+		}
+		paddle1.setLocation(paddleXCord, paddleYCord);
+		paddle2.setLocation(paddleXCord+newPaddleWidth, paddleYCord);
+		paddle3.setLocation(paddleXCord + newPaddleWidth*2, paddleYCord);
+	}
+	
+/* Method: ballMaker() */
+/** Makes the ball and determines the original velocity of the ball */
+	private void ballMaker(){
+		directionY = 3;
+		directionX = rgen.nextDouble(1, 3);
+		if (rgen.nextBoolean(0.5)) {
+			directionX = -directionX;
+		}
+		add(ball);
+	}
+	
+/* Method: ballMove() */
+/** Moves the ball, calls up the checkCollision() method and if it did collide with something it will act appropiately */
+	private void ballMove(){
+		/*if(fireBullet == true){
+			bullet = new GOval(paddle2.getX() + newPaddleWidth /2, paddle2.getY(), bulletDiameter, bulletDiameter);
+			add(bullet);
+		}*/
+		while( (((ball.getY()) + diameter) < HEIGHT) /*If it it is limited by the bottom*/ && ((ball.getX() + diameter) < WIDTH) /*if it is limited by the right*/ && ((ball.getY()) > 0) /*if it is limited by the top*/ && ((ball.getX()) > 0) /*if it is limited by the left*/ )	{
+			ball.move(directionX, directionY);
+			/*if(fireBullet == true){
+				bullet.move(bulletDirectionX, bulletDirectionY);
+			}*/
+			//checkCollisionBullet2();
+			pause(speed);
+			collisionReactor();
+		}
+		if((ball.getY() + diameter) > HEIGHT || (ball.getY()) < 0)	{ //if it hits the bottom or top side
+			if((ball.getY() + diameter) > HEIGHT){
+				lostYet = true;
+			}
+			else{
+				directionY = -directionY;
+				ball.move(directionX, directionY);
+				noMoreCollision = false;
+				bounceClip.play(); 
+			}
+		}
+		if(((ball.getX() + diameter) > WIDTH) || ((ball.getX()) < 0)){ //if it hits the right  or left side
+			directionX = -directionX;
+			ball.move(directionX, directionY);
+			noMoreCollision = false;
+			bounceClip.play(); 
+		}
+	}
+	
+/* Method: square() */
+/** Adds a square at the top left corner (for debugging purposes) */
+	private boolean square(){
+		GRect shape = new GRect(0,0,50,50);
+		add(shape);
+		return true;
+	}
+	
+/* Method: checkCollision() */
+/** Checks for a collision on the corners of the square that define the ball, and if there is a collision it returns the object it collided with */
+	private GObject checkCollision(){
+		if(getElementAt(ball.getX() + diameter/2, ball.getY() -1) != null){ //top side
+			fireBullet = false;
+			System.out.println("Top was triggered");
+			//System.out.println(getElementAt(ball.getX() + diameter/2, ball.getY() +1) );
+			return getElementAt(ball.getX() + diameter/2 , ball.getY() -1);
+		}
+		if(getElementAt(ball.getX() + diameter +1, ball.getY() + diameter /2) != null){ //left side
+			fireBullet = false;
+			System.out.println("Left was triggered");
+			return getElementAt(ball.getX() + diameter +1, ball.getY() + diameter /2);
+		}
+		if(getElementAt(ball.getX() + diameter / 2, ball.getY() + diameter +1) != null){ //bottom side
+			fireBullet = false;
+			System.out.println("Bottom was triggered");
+			return getElementAt(ball.getX() + diameter / 2, ball.getY() + diameter +1);
+		}
+		if(getElementAt(ball.getX() + diameter + 1 , ball.getY() + diameter /2 ) != null){ //right side
+			fireBullet = false;
+			System.out.println("Right was triggered");
+			return getElementAt(ball.getX() + diameter /2 , ball.getY() + diameter /2 );
+			
+		}
+		return null;
+	}
+	
+	
+	/* Method: checkCollisionBullet() */
+	/** Checks for a collision on the corners of the square that define the bullet, and if there is a collision it returns the object it collided with */
+		private GObject checkCollisionBullet(){
+			if(getElementAt(bullet.getX(), bullet.getY()) != null){ 
+				return getElementAt(bullet.getX(), bullet.getY());
+			}
+			if(getElementAt(bullet.getX() + diameter, bullet.getY()) != null){
+				return getElementAt(bullet.getX() + diameter, bullet.getY());
+			}
+			if(getElementAt(bullet.getX() + diameter, bullet.getY() + diameter) != null){
+				return getElementAt(bullet.getX() + diameter, bullet.getY() + diameter);
+			}
+			if(getElementAt(bullet.getX(), bullet.getY() + diameter) != null){
+				return getElementAt(bullet.getX(), bullet.getY() + diameter);
+			}
+			return null;
+		}
+		
+		private void checkCollisionBullet2(){
+			GObject collider = checkCollisionBullet();
+			if(collider != paddle1 && collider != paddle2 && collider != paddle3 && collider != ball){
+				if(collider != null){
+					remove(collider);
+					amountRemoved++;
+					remove(bullet);
+				}
+			}
+		}
+		
+	
+	
+	
+/* Method: startTimer() */
+/** Starts the timer. */
+	private void startTimer(){
+		time = System.currentTimeMillis();
+	}
+	
+/* Method: done() */
+/** Ends the timer and displays the time that the game lasted. Also says how many blocks you destroyed and whether or not you won. */
+	private void done(){
+		long totalTime = Math.abs((time - System.currentTimeMillis()) / 1000); 
+		removeAll();
+		GLabel time = new GLabel("It took you " + totalTime + " seconds to finish.", 100,100);
+		double ascentTime = time.getAscent();
+		double widthOfTime = time.getWidth();
+		time.setLocation((WIDTH /2) - (widthOfTime /2), HEIGHT/2 - ascentTime/2);
+		add(time);
+		GLabel score = new GLabel("You destroyed " + (amountRemoved) + " blocks and the statement 'You Lost' is " + lostYet);
+		if(lostYet == true){
+			score.setLabel("You destroyed " + (amountRemoved) + " blocks before you lost");
+			System.out.println("Failure");
+		}
+		else{
+			score.setLabel("Congratulations, you won by destroying " + (amountRemoved - 20) + " blocks! ");
+		}
+		double widthScore = score.getWidth();
+		double ascentScore = score.getAscent();
+		score.setLocation((WIDTH /2) - (widthScore /2), HEIGHT/2 - (ascentScore/2 + ascentTime + 10));
+		add(score);
+	}
+	
+/* Method: waitForUser() */
+/** Displays a label telling the user to click, once they click it begins the game. */
+	private void waitForUser(){
+		GLabel wait = new GLabel("When you are ready to play, please click.", 100,100);
+		double ascentTime = wait.getAscent();
+		double widthOfTime = wait.getWidth();
+		wait.setLocation((WIDTH /2) - (widthOfTime /2), HEIGHT/2 - ascentTime/2 - diameter);
+		add(wait);
+		//waitForClick();
+		remove(wait);
+	}
+	
+/* Method: difficulty() */
+/** Displays directions at the beginning of the game on changing the speed, and thus the difficulty  */	
+	private void difficulty(){
+		remove(ball);
+		GLabel instructions = new GLabel("Use the up and down arrow keys to select a speed. Enter when done. ", 100,100);
+		double ascentTime = instructions.getAscent();
+		double widthOfTime = instructions.getWidth();
+		instructions.setLocation((WIDTH /2) - (widthOfTime /2), HEIGHT/2 - ascentTime/2 );
+		add(instructions);
+		
+		GLabel speedAverage = new GLabel("15 is average, 7 is hard, 30 is easy ", 100,100);
+		double ascentspeedAverage = speedAverage.getAscent();
+		double widthOfspeedAverage = speedAverage.getWidth();
+		speedAverage.setLocation((WIDTH /2) - (widthOfspeedAverage /2), HEIGHT/2 - ascentspeedAverage/2 + diameter);
+		add(speedAverage);
+		
+		GLabel liveSpeed = new GLabel("Speed is: " + speed);
+		double ascentliveSpeed = liveSpeed.getAscent();
+		double widthOfliveSpeed = liveSpeed.getWidth();
+		liveSpeed.setLocation((WIDTH /2) - (widthOfliveSpeed /2), HEIGHT/2 - ascentliveSpeed/2 + diameter * 2);
+		add(liveSpeed);
+		while(start == false){
+			pause(50);
+		}
+		remove(instructions);
+		remove(speedAverage);
+		remove(liveSpeed);
+	}
+	
+
+	/* Method: keyPressed() */
+	/** Called whenever a key is pressed to use the up and down keys to change the speed variable. */
+	public void keyPressed(KeyEvent e){
+		if(e.getKeyCode() == KeyEvent.VK_DOWN){
+			System.out.println(speed);
+			if(speed != 0){
+				speed--;
+			}
+			else{
+				System.out.println("Sorry, this library does not support time travel. Add import acm.util.timeTravel*; to your code.");
+			}
+		}
+		if(e.getKeyCode() == KeyEvent.VK_UP){
+			System.out.println(speed);
+			speed++;
+		}
+		if(e.getKeyCode() == KeyEvent.VK_ENTER){
+			System.out.println("Starting...");
+			start = true;
+		}
+		if(hasGun == true && e.getKeyCode() == KeyEvent.VK_SPACE){
+			//shootGun(1);
+		}
+	}
+	
+	/*private void shootGun(int i){
+		shootGunM.run();
+	}*/
+	
+		
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	private int arrayBrickDestroyedChecker(){
+		int amountDestroyed = 0;
+		for(int x=0; x <= 100; x++){    
+			if(bricks[x].getColor() == Color.gray){
+				amountDestroyed++;
+			}
+		}
+		return amountDestroyed;
+	}
+	
+	private void collisionReactor(){
+		GObject collider=checkCollision();
+		if(checkCollision() != null){
+			System.out.println(checkCollision());
+		}
+		if(noMoreCollision == false){
+			if(collider == paddle1 || collider == paddle2 || collider == paddle3){
+				bounceClip.play(); 
+				if(directionX > 0 && collider == paddle1){
+					directionX = -directionX;
+				}
+				else{
+					if(directionX < 0 && collider == paddle3){
+						directionX = -directionX;
+					}
+				}
+				directionY = -directionY;
+				//System.out.println("Done with Paddles");
+				//for(int i=0; i<5; i++){
+					//headOnEscape();
+				//}
+				noMoreCollision = true;
+			}
+		}
+		repeatCollision++;
+		//System.out.println(repeatCollision);
+		if(repeatCollision >= 100){
+			if(collider != paddle1 && collider != paddle2 && collider != paddle3 && collider != ball){
+				if(collider != null){
+					collider.setColor(Color.gray);
+					remove(collider);
+					pause(10);
+					amountRemoved++;
+					System.out.print("Removed");
+					System.out.println(amountRemoved);
+					directionY = -directionY;
+					noMoreCollision = false;
+					bounceClip.play(); 
+					return;
+				}
+			}
+		}
+		else{
+			if(collider != paddle1 && collider != paddle2 && collider != paddle3){
+				if(collider != null){
+					//directionY = -directionY;
+				}
+			}
+		}
+	}
+}
+
+
+
