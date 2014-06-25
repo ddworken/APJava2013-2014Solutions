@@ -1,0 +1,102 @@
+/*
+ * File: Face.java
+ * ------------------
+ * This program is a stub for the Face problem, which draws
+ * a Face.
+ */
+
+import java.awt.Color;
+
+import acm.program.*;
+import acm.graphics.*;
+
+public class Face extends GraphicsProgram {
+
+	
+	public void run() {
+		int height = getHeight(); //the height
+		int width = getWidth(); //the width
+		//HEAD SIZE
+		int HEAD_WIDTH = 80; //the width of the head
+		int HEAD_HEIGHT = 200; //the heigh of the head
+		//EYE SIZE
+		int EYE_RADIUS = 20;//the radius of the eye
+		//MOUTH SIZE
+		int MOUTH_WIDTH = 60; //the width of the mouth
+		int MOUTH_HEIGHT = 20; //the height of the mouth 
+		//CENTERING VARIABLES
+		double xCornerFaceRect; //the x coordinate for the face rectangle
+		double yCornerFaceRect; //the y coordinate for the face rectangle
+		
+/*
+  ______                _____           _                    _          _____           _   _             
+ |  ____|              |  __ \         | |                  | |        / ____|         | | (_)            
+ | |__ __ _  ___ ___   | |__) |___  ___| |_ __ _ _ __   __ _| | ___   | (___   ___  ___| |_ _  ___  _ __  
+ |  __/ _` |/ __/ _ \  |  _  // _ \/ __| __/ _` | '_ \ / _` | |/ _ \   \___ \ / _ \/ __| __| |/ _ \| '_ \ 
+ | | | (_| | (_|  __/  | | \ \  __/ (__| || (_| | | | | (_| | |  __/   ____) |  __/ (__| |_| | (_) | | | |
+ |_|  \__,_|\___\___|  |_|  \_\___|\___|\__\__,_|_| |_|\__, |_|\___|  |_____/ \___|\___|\__|_|\___/|_| |_|
+                                                        __/ |                                             
+                                                       |___/                                              
+ */
+		xCornerFaceRect = (width / 2) - (HEAD_WIDTH / 2); //stores the adjusted midpoint for the head's X cord as a variable
+		yCornerFaceRect = (height / 2) - (HEAD_HEIGHT /2); //stores the adjusted midpoint for the head's Y cord as a variable	
+		GRect faceRect = new GRect(xCornerFaceRect, yCornerFaceRect, HEAD_WIDTH, HEAD_HEIGHT); //creates the face rectangle at the correct coordinates
+		faceRect.setFilled(true); //sets it to solid
+		faceRect.setFillColor(Color.gray); //sets the solid to grey fill
+		add(faceRect); //adds the face rectangle to the canvas
+/*
+  ______               _____           _   _             
+ |  ____|             / ____|         | | (_)            
+ | |__  _   _  ___   | (___   ___  ___| |_ _  ___  _ __  
+ |  __|| | | |/ _ \   \___ \ / _ \/ __| __| |/ _ \| '_ \ 
+ | |___| |_| |  __/   ____) |  __/ (__| |_| | (_) | | | |
+ |______\__, |\___|  |_____/ \___|\___|\__|_|\___/|_| |_|
+         __/ |                                           
+        |___/                                            		
+ */
+
+		double yCenterEye = (HEAD_HEIGHT / 4) + yCornerFaceRect; //generates the Y cord for the eye and stores it as a variable
+		//left eye
+		double xLeftEye = (xCornerFaceRect + (HEAD_WIDTH / 4)); //generates the X cord for the left eye and stores it as a variable
+		GOval leftEye = new GOval(xLeftEye, yCenterEye, EYE_RADIUS/2, EYE_RADIUS/2); //creates the eye
+		leftEye.setFilled(true);
+		leftEye.setFillColor(Color.yellow);
+		leftEye.setColor(Color.yellow);
+		add(leftEye);
+		//right eye
+		double xRightEye = ((xCornerFaceRect + HEAD_WIDTH) -(HEAD_WIDTH / 4)) - (EYE_RADIUS /2); //generates the X cord for the right eye and stores it as a variable
+		GOval rightEye = new GOval(xRightEye, yCenterEye, EYE_RADIUS/2, EYE_RADIUS/2); //creates the eye
+		rightEye.setFilled(true);
+		rightEye.setFillColor(Color.yellow);
+		rightEye.setColor(Color.yellow);
+		add(rightEye); 
+		
+/*
+  __  __             _   _         _____           _   _             
+ |  \/  |           | | | |       / ____|         | | (_)            
+ | \  / | ___  _   _| |_| |__    | (___   ___  ___| |_ _  ___  _ __  
+ | |\/| |/ _ \| | | | __| '_ \    \___ \ / _ \/ __| __| |/ _ \| '_ \ 
+ | |  | | (_) | |_| | |_| | | |   ____) |  __/ (__| |_| | (_) | | | |
+ |_|  |_|\___/ \__,_|\__|_| |_|  |_____/ \___|\___|\__|_|\___/|_| |_|
+                                                                     
+                                                                     
+ */
+		
+		
+		
+		double yMouthRect = HEAD_HEIGHT + MOUTH_HEIGHT + (HEAD_HEIGHT / 4);d
+		double xMouthRect = xCornerFaceRect + ((HEAD_WIDTH /2) - (MOUTH_WIDTH /2));
+		
+		GRect mouthRect = new GRect(xMouthRect, yMouthRect, MOUTH_WIDTH, MOUTH_HEIGHT);
+		mouthRect.setFilled(true);
+		mouthRect.setFillColor(Color.white);
+		mouthRect.setColor(Color.white);
+		add(mouthRect);
+	}
+
+}
+
+
+
+
+
