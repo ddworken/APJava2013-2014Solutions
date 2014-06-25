@@ -1,0 +1,45 @@
+import java.lang.reflect.Array;
+import info.gridworld.actor.Bug;
+
+public class ZBug extends Bug {
+	private int ZLength;
+	private int movesSoFar;
+	private boolean firstTurn = true;
+	
+	public ZBug(int ZLengthIn) {
+		ZLength = ZLengthIn;
+		while(getDirection() != 90){
+			turn();
+		}
+	} 
+	public void act() { 
+		 if (canMove() && movesSoFar < ZLength) { 
+			 move(); 
+			 movesSoFar++;
+		 } 
+		 else { 
+			 if(canMove() == false){
+				 //do nothing
+			 }
+			 else{
+				 if(movesSoFar < ZLength == false && firstTurn == true){
+					 firstTurn = false;
+					 turn();
+					 turn();
+					 turn();
+					 movesSoFar = 0;
+				 }
+				 else{
+					 if(movesSoFar < ZLength == false && firstTurn == false){
+						 turn();
+						 turn();
+						 turn();
+						 turn();
+						 turn();
+						 movesSoFar = 0;
+					 }
+				 }
+			 }
+		 } 
+	}
+}
