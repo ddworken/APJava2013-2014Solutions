@@ -1,0 +1,50 @@
+/*
+ * File: FileManipulation.java
+ * --------------------
+ * This program is a stub for the Assignment 12.
+ * This works on manipulating text in files.
+ */
+
+import acm.program.*;
+import acm.util.ErrorException;
+import java.io.*;
+import java.util.*;
+
+public class FileManipulation extends ConsoleProgram {
+	int[] histogramInts = new int[200];
+	String[] junkStrings = new String[200];
+	
+	public void run() {
+		wordCount();
+		histogram();
+	}
+
+	private void wordCount(){
+		//write and call any additional methods you need.
+	}
+	
+	private void histogram(){
+		populateIntArrayHistogram();
+		
+	}
+	
+	private void populateIntArrayHistogram(){
+		try{
+			int i = 0;
+	    	FileReader filereader = new FileReader("MidtermScores.txt");
+	        BufferedReader readline = new BufferedReader(filereader);
+	        while(readline.readLine() != null)
+	        	i++;
+	        	junkStrings[i] = readline.readLine();
+	        	histogramInts[i] = Integer.parseInt(junkStrings[i]);
+	        	System.out.print(histogramInts[i]);
+	        }
+    	catch(IOException e) {
+    	      //should never happen
+    	}
+    	finally{
+			//nothing
+    	}
+	}
+
+}
