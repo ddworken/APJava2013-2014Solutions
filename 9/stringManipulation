@@ -1,0 +1,123 @@
+import acm.program.*;
+
+
+public class StringManipulation extends ConsoleProgram {
+	public void run() {
+		int choice = readInt("Input 1 to remove occurences of a character from a phrase; 2 to add commas to a numeric string; 3 to use a caesar cipher with a shift of 1; 4 to use a caesar cipher with a shift you define; 5 to count how many times a character appears in a phrase; 6 to convert text to 1337 sp3@k: ");
+		if(choice == 1){
+			String str = readLine("Input the input string then hit enter: ");
+			String ch = readLine("Input the string to remove then hit enter: ");
+			println(removeAllOccurrences(str, ch));
+		}
+		if(choice == 2){
+			while(true){
+			 	String digits = readLine("Enter a numeric string: ");
+			 	if (digits.length() == 0) {
+			 		break;
+			 	}
+			 	println(addCommasToNumericString(digits));
+			}
+		}
+		if(choice == 3){
+			String phraseToEncrypt = readLine("Input the phrase you would like to encrypt: ");
+			println(caesarCipher1(phraseToEncrypt));
+		}
+		if(choice == 4){
+			String phraseToEncrypt = readLine("Input the phrase you would like to encrypt: ");
+			int shiftAmount = readInt("Input the amount you would like to shift by: ");
+			println(caesarCipher2(phraseToEncrypt, shiftAmount));
+		}
+		if(choice == 5){
+			String phraseToCount = readLine("Input the phrase that you want to check for occurences of a specific character");
+			String find = readLine("Input the character you would like to search for: ");
+			char charFind = find.charAt(0);
+			println(countChar(phraseToCount, charFind));
+		}
+	}
+	private String addCommasToNumericString(String digits){
+		int stringLength = digits.length();
+		String result = "";
+		int adjustment=0;
+		if((stringLength - 1)%3 == 0){
+			adjustment = 0;
+		}
+		if((stringLength - 2)%3 == 0){
+			adjustment = 2;
+		}
+		if((stringLength - 3)%3 == 0){
+			adjustment = 4;
+		}
+		for(int i=stringLength -1; i >= 0; i--){
+			//System.out.println(i);
+			if((i+adjustment)%3 == 0 && i != stringLength -1){
+				result = "," + result;
+			}
+			result = digits.charAt(i) + result;
+			System.out.println(result);
+		}
+		return result;
+	}
+	
+	private String removeAllOccurrences(String str, String ch){
+		String finalStr = str.replace(ch, "");
+		return finalStr;
+	}
+	
+	private String caesarCipher1(String phraseToBeEncrypted){
+		int shiftAmount = 1;
+		String encryptedPhrase = "";
+		for(int i =0; i < phraseToBeEncrypted.length(); i++){
+			char charBeingEncrypted = phraseToBeEncrypted.charAt(i);
+			if(charBeingEncrypted != 'z'){
+				if(charBeingEncrypted >= 'a' && charBeingEncrypted < 'z'){
+					charBeingEncrypted = (char)((int)charBeingEncrypted + shiftAmount);
+				}
+			}
+			else{
+				if(charBeingEncrypted == 'z'){
+					charBeingEncrypted = 'a';
+				}
+			}
+			System.out.println(charBeingEncrypted);
+			encryptedPhrase = encryptedPhrase + charBeingEncrypted;
+		}
+		return encryptedPhrase;
+	}
+	
+	private String caesarCipher2(String phraseToBeEncrypted, int shiftAmount){
+		String encryptedPhrase = "";
+		for(int i =0; i < phraseToBeEncrypted.length(); i++){
+			char charBeingEncrypted = phraseToBeEncrypted.charAt(i);
+			if(charBeingEncrypted >= 'a' && charBeingEncrypted <= 'z' - shiftAmount ){
+				charBeingEncrypted = (char)((int)charBeingEncrypted + shiftAmount);
+			}
+			else{
+				if(charBeingEncrypted > 'z' - shiftAmount){
+					charBeingEncrypted = 'a';
+					int newShiftAmount = shiftAmount -1;
+					if(charBeingEncrypted >= 'a' && charBeingEncrypted < 'z' - newShiftAmount ){
+						charBeingEncrypted = (char)((int)charBeingEncrypted + newShiftAmount);
+					}
+				}
+			}
+			System.out.println(charBeingEncrypted);
+			encryptedPhrase = encryptedPhrase + charBeingEncrypted;
+		}
+		return encryptedPhrase;
+	}
+	
+	private String countChar(String phrase, char charToBeCounted){
+		String newString = "";
+		int stringLength = phrase.length();
+		int numberOfOccurences = 0;
+		for(int i = 0; i <= stringLength; i++){
+			if(phrase.charAt(i) == charToBeCounted){
+				numberOfOccurences++;
+			}
+		}
+		newString = "The number of times '" + charToBeCounted + "'occured is " + numberOfOccurences;
+		return newString;
+	}
+	
+	
+}
