@@ -1,0 +1,61 @@
+private static String readLine(){
+        Scanner in = new Scanner( System.in );
+        return in.next();
+    }
+
+    private static String readLine(String prompt){
+        Scanner in = new Scanner( System.in );
+        System.out.println(prompt);
+        return in.next();
+    }
+
+    private static boolean readBoolean(){
+        Scanner in = new Scanner( System.in );
+        return in.nextBoolean();
+    }
+
+    private static boolean readBoolean(String prompt){
+        Scanner in = new Scanner( System.in );
+        System.out.println(prompt);
+        return in.nextBoolean();
+    }
+
+    private static int readInt(){
+        Scanner in = new Scanner( System.in );
+        return in.nextInt();
+    }
+
+    private static int readInt(String prompt){
+        Scanner in = new Scanner( System.in );
+        System.out.println(prompt);
+        return in.nextInt();
+    }
+
+    private static double readDouble(){
+        Scanner in = new Scanner( System.in );
+        return in.nextDouble();
+    }
+
+    private static double readDouble(String prompt){
+        Scanner in = new Scanner( System.in );
+        System.out.println(prompt);
+        return in.nextDouble();
+    }
+
+    private static void print(String output){
+        System.out.print(output);
+    }
+
+    private static void println(String output){
+        System.out.println(output);
+    }
+
+    private static void println(){
+        System.out.println("");
+    }
+
+    private static void pause(int timeInMillis){
+        long start = System.currentTimeMillis();
+        while(System.currentTimeMillis() - start < timeInMillis){
+        }
+    }
